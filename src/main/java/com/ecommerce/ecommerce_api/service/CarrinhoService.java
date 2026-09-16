@@ -1,5 +1,7 @@
 package com.ecommerce.ecommerce_api.service;
 
+import com.ecommerce.ecommerce_api.dto.carrinho.CarrinhoResponseDTO;
+import com.ecommerce.ecommerce_api.dto.itemCarrinho.ItemCarrinhoResponseDTO;
 import com.ecommerce.ecommerce_api.entity.*;
 import com.ecommerce.ecommerce_api.repository.CarrinhoRepository;
 import com.ecommerce.ecommerce_api.repository.ItemCarrinhoRepository;
@@ -9,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,6 +75,28 @@ public class CarrinhoService {
 
     public Carrinho buscarPorUsuario(UUID usuarioId) {
         return buscarOuCriarCarrinho(usuarioId);
+    }
+
+    public CarrinhoResponseDTO toResponseDTO(Carrinho carrinho){
+        List<ItemCarrinhoResponseDTO> itensResponse = new ArrayList<>();
+        BigDecimal valorTotal = BigDecimal.ZERO;
+
+        for (ItemCarrinho item : carrinho.getItens()){
+            BigDecimal subTotal = item.getVarianteProduto().getPreco()
+                    .multiply(BigDecimal.valueOf(item.getQuantidade()));
+
+            ItemCarrinhoResponseDTO itemDTO = new ItemCarrinhoResponseDTO(
+                    item.getId(),
+                    item.getVarianteProduto().getProduto().getNome(),
+                    item.getQuantidade(),
+                    item.getVarianteProduto().getPreco(),
+                    subTotal
+            );
+            itensResponse.add(itemDTO);
+
+            valorTotal = valorTotal.add(itemDTO.subtotal());
+        }
+        return  new CarrinhoResponseDTO(carrinho.getId(), itensResponse, valorTotal);
     }
 
 }
