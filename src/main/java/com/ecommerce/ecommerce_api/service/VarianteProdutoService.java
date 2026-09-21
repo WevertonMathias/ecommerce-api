@@ -67,5 +67,11 @@ public class VarianteProdutoService {
         return varianteProdutoRepository.save(variante);
     }
 
-
+    @Transactional
+    public void inativar(UUID id){
+        VarianteProduto varianteExistente = varianteProdutoRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Variante não encontrada"));
+        varianteExistente.setAtivo(false);
+        varianteProdutoRepository.save(varianteExistente);
+    }
 }
