@@ -37,8 +37,8 @@ public class Usuario {
     @Column(columnDefinition = "uuid")
     private UUID id;
 
-    @Column(name = "name", nullable = false, unique = true, length = 30)
-    private RoleName name;
+    @Column(name = "name", nullable = false, length = 100)
+    private String nome;
 
     @Column(name = "email", nullable = false, unique = true, length = 150)
     private String email;
@@ -54,19 +54,22 @@ public class Usuario {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime atualizadoEm;
 
+    @Column(name = "active", nullable = false)
+    private boolean ativo = true;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> papeis = new HashSet<>();
+    private Set<Papel> papeis = new HashSet<>();
 
-    public void adicionarPapel(Role role) {
+    public void adicionarPapel(Papel role) {
         this.papeis.add(role);
     }
 
-    public void removerPapel(Role role) {
+    public void removerPapel(Papel role) {
         this.papeis.remove(role);
     }
 }
