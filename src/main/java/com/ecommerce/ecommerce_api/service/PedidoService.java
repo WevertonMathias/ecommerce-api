@@ -1,6 +1,8 @@
 package com.ecommerce.ecommerce_api.service;
 
 import com.ecommerce.ecommerce_api.entity.*;
+import com.ecommerce.ecommerce_api.exception.RecursoNaoEncontradoException;
+import com.ecommerce.ecommerce_api.exception.RegraDeNegocioException;
 import com.ecommerce.ecommerce_api.repository.CarrinhoRepository;
 import com.ecommerce.ecommerce_api.repository.PedidoRepository;
 import com.ecommerce.ecommerce_api.repository.VarianteProdutoRepository;
@@ -24,10 +26,10 @@ public class PedidoService {
     @Transactional
     public Pedido criarAPartirDoCarrinho(UUID usuarioId, Endereco endereco) {
         Carrinho carrinho = carrinhoRepository.findByUsuarioId(usuarioId)
-                .orElseThrow(()-> new RuntimeException("Usuario não encontrado"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Carrinho não encontrado"));
 
         if (carrinho.getItens().isEmpty()){
-            throw new RuntimeException("Carrinho esta vazio");
+            throw new RegraDeNegocioException("Carrinho esta vazio");
         }
 
         Pedido pedido= new Pedido();
@@ -44,6 +46,7 @@ public class PedidoService {
             itemPedido.setSubTotal(itemPedido.getPrecoUnitario()
                     .multiply(BigDecimal.valueOf(item.getQuantidade())));
             pedido.adicionarItem(itemPedido);
+
             varianteProdutoService.diminuirEstoque(
                     item.getVarianteProduto().getId(),
                     item.getQuantidade()
@@ -61,7 +64,7 @@ public class PedidoService {
 
     public Pedido buscarPorId(UUID id) {
         return pedidoRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Pedido não encontrado para o ID: " + id));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Pedido não encontrado para o ID: " + id));
     }
 
     public List<Pedido> listarPorUsuario(UUID usuarioId) {
@@ -71,29 +74,29 @@ public class PedidoService {
     @Transactional
     public Pedido atualizarStatus(UUID pedidoId, StatusPedido novoStatus) {
         Pedido pedido = pedidoRepository.findById(pedidoId)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado para o ID: " + pedidoId));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido não encontrado para o ID: " + pedidoId));
 
         StatusPedido statusAtual = pedido.getStatus();
 
         switch (statusAtual) {
             case PENDENTE:
                 if (novoStatus != StatusPedido.PAGO && novoStatus != StatusPedido.CANCELADO) {
-                    throw new RuntimeException("Pedido PENDENTE só pode virar PAGO ou CANCELADO");
+                    throw new RegraDeNegocioException("Pedido PENDENTE só pode virar PAGO ou CANCELADO");
                 }
                 break;
             case PAGO:
                 if (novoStatus != StatusPedido.ENVIADO && novoStatus != StatusPedido.CANCELADO) {
-                    throw new RuntimeException("Pedido PAGO só pode virar ENVIADO ou CANCELADO");
+                    throw new RegraDeNegocioException("Pedido PAGO só pode virar ENVIADO ou CANCELADO");
                 }
                 break;
             case ENVIADO:
                 if (novoStatus != StatusPedido.ENTREGUE) {
-                    throw new RuntimeException("Pedido ENVIADO só pode virar ENTREGUE");
+                    throw new RegraDeNegocioException("Pedido ENVIADO só pode virar ENTREGUE");
                 }
                 break;
             case ENTREGUE:
             case CANCELADO:
-                throw new RuntimeException("Pedido em status final não pode mudar de status");
+                throw new RegraDeNegocioException("Pedido em status final não pode mudar de status");
         }
 
         pedido.setStatus(novoStatus);
