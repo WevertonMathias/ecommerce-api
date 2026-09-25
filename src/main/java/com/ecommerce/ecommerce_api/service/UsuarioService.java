@@ -3,6 +3,8 @@ package com.ecommerce.ecommerce_api.service;
 import com.ecommerce.ecommerce_api.entity.NomePapel;
 import com.ecommerce.ecommerce_api.entity.Papel;
 import com.ecommerce.ecommerce_api.entity.Usuario;
+import com.ecommerce.ecommerce_api.exception.RecursoNaoEncontradoException;
+import com.ecommerce.ecommerce_api.exception.RegraDeNegocioException;
 import com.ecommerce.ecommerce_api.repository.PapelRepository;
 import com.ecommerce.ecommerce_api.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,19 +26,19 @@ public class UsuarioService {
     @Transactional
     public Usuario cadastrar(Usuario usuario){
         if (usuarioRepository.existsByEmail(usuario.getEmail())){
-            throw new RuntimeException("Email já cadastrado!");
+            throw new RegraDeNegocioException("Email já cadastrado!");
         }
 
         usuario.setSenhaHash(passwordEncoder.encode(usuario.getSenhaHash()));
         Papel papelCliente = papelRepository.findByName(NomePapel.CLIENTE)
-                .orElseThrow(()-> new RuntimeException("Papel CLIENTE não encontrado!"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Papel CLIENTE não encontrado!"));
         usuario.adicionarPapel(papelCliente);
         return usuarioRepository.save(usuario);
     }
 
     public Usuario buscarPorId(UUID id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
     }
 
     public List<Usuario> listarAtivos() {
