@@ -1,6 +1,8 @@
 package com.ecommerce.ecommerce_api.service;
 
 import com.ecommerce.ecommerce_api.entity.Categoria;
+import com.ecommerce.ecommerce_api.exception.RecursoNaoEncontradoException;
+import com.ecommerce.ecommerce_api.exception.RegraDeNegocioException;
 import com.ecommerce.ecommerce_api.repository.CategoriaRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +20,14 @@ public class CategoriaService {
     @Transactional
     public Categoria criar(Categoria categoria){
         if (categoriaRepository.existsByNome(categoria.getNome())){
-            throw new RuntimeException("Nome já cadastrado!");
+            throw new RegraDeNegocioException("Nome já cadastrado!");
         }
         return categoriaRepository.save(categoria);
     }
 
     public Categoria buscarPorId(UUID id){
         return categoriaRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Categoria não encontrada"));
     }
 
     public List<Categoria> listarTodas(){
@@ -35,7 +37,7 @@ public class CategoriaService {
     @Transactional
     public Categoria atualizar(UUID id, Categoria dadosNovos){
         Categoria categoriaExistente = categoriaRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Categoria não encontrada"));
         categoriaExistente.setNome(dadosNovos.getNome());
         categoriaExistente.setDescricao(dadosNovos.getDescricao());
 
@@ -45,7 +47,7 @@ public class CategoriaService {
     @Transactional
     public void deletar(UUID id){
         categoriaRepository.findById(id)
-                        .orElseThrow(()-> new RuntimeException("Categoria não encontrada"));
+                        .orElseThrow(()-> new RecursoNaoEncontradoException("Categoria não encontrada"));
         categoriaRepository.deleteById(id);
     }
 }
