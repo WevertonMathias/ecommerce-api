@@ -3,6 +3,7 @@ package com.ecommerce.ecommerce_api.service;
 import com.ecommerce.ecommerce_api.dto.carrinho.CarrinhoResponseDTO;
 import com.ecommerce.ecommerce_api.dto.itemCarrinho.ItemCarrinhoResponseDTO;
 import com.ecommerce.ecommerce_api.entity.*;
+import com.ecommerce.ecommerce_api.exception.RecursoNaoEncontradoException;
 import com.ecommerce.ecommerce_api.repository.CarrinhoRepository;
 import com.ecommerce.ecommerce_api.repository.ItemCarrinhoRepository;
 import com.ecommerce.ecommerce_api.repository.UsuarioRepository;
@@ -33,7 +34,7 @@ public class CarrinhoService {
             return carrinhoExistente.get();
         }
         Usuario usuarioEncontrado = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
         Carrinho novoCarrinho = new Carrinho();
         novoCarrinho.setUsuario(usuarioEncontrado);
@@ -45,7 +46,7 @@ public class CarrinhoService {
     public Carrinho adicionarItem(UUID usuarioId, UUID varianteProdutoId, int quantidade) {
         Carrinho carrinho = buscarOuCriarCarrinho(usuarioId);
         VarianteProduto varianteExistente = varianteProdutoRepository.findById(varianteProdutoId)
-                .orElseThrow(()-> new RuntimeException("Variante não encontrada"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Variante não encontrada"));
 
         Optional<ItemCarrinho> itemExistente = itemCarrinhoRepository.findByCarrinhoIdAndVarianteProdutoId(carrinho.getId()
                 , varianteProdutoId);
@@ -68,7 +69,7 @@ public class CarrinhoService {
     public Carrinho removerItem(UUID usuarioId, UUID itemCarrinhoId) {
         Carrinho carrinho = buscarOuCriarCarrinho(usuarioId);
         ItemCarrinho item = itemCarrinhoRepository.findById(itemCarrinhoId)
-                .orElseThrow(()-> new RuntimeException("Item não encontrado"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Item não encontrado"));
         carrinho.removerItem(item);
         return carrinhoRepository.save(carrinho);
     }
