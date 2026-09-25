@@ -2,13 +2,14 @@ package com.ecommerce.ecommerce_api.service;
 
 import com.ecommerce.ecommerce_api.entity.Produto;
 import com.ecommerce.ecommerce_api.entity.VarianteProduto;
+import com.ecommerce.ecommerce_api.exception.RecursoNaoEncontradoException;
+import com.ecommerce.ecommerce_api.exception.RegraDeNegocioException;
 import com.ecommerce.ecommerce_api.repository.ProdutoRepository;
 import com.ecommerce.ecommerce_api.repository.VarianteProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,10 +23,10 @@ public class VarianteProdutoService {
     @Transactional
     public VarianteProduto criar(VarianteProduto variante){
         if (varianteProdutoRepository.existsBySku(variante.getSku())){
-            throw new RuntimeException("Sku já cadastrado");
+            throw new RegraDeNegocioException("Sku já cadastrado");
         }
         Produto produtoEncontrado = produtoRepository.findById(variante.getProduto().getId())
-                .orElseThrow(()-> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Produto não encontrado"));
 
         variante.setProduto(produtoEncontrado);
         return varianteProdutoRepository.save(variante);
@@ -33,7 +34,7 @@ public class VarianteProdutoService {
 
     public VarianteProduto buscarPorId(UUID id){
         return varianteProdutoRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Variante de produto não encontrado"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Variante de produto não encontrado"));
     }
 
     public List<VarianteProduto> listarPorProduto(UUID produtoId) {
@@ -43,7 +44,7 @@ public class VarianteProdutoService {
     @Transactional
     public VarianteProduto atualizar(UUID id, VarianteProduto dadosNovos) {
         VarianteProduto varianteExistente = varianteProdutoRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Variante não encontrada"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Variante não encontrada"));
 
         varianteExistente.setTamanho(dadosNovos.getTamanho());
         varianteExistente.setCor(dadosNovos.getCor());
@@ -56,10 +57,10 @@ public class VarianteProdutoService {
     @Transactional
     public VarianteProduto diminuirEstoque(UUID id, int quantidade) {
         VarianteProduto variante = varianteProdutoRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Variante não encontrada"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Variante não encontrada"));
 
         if (variante.getQuantidadeEstoque()< quantidade){
-            throw new RuntimeException("Estoque insuficiente");
+            throw new RegraDeNegocioException("Estoque insuficiente");
         }
 
         variante.setQuantidadeEstoque(variante.getQuantidadeEstoque() - quantidade);
@@ -70,7 +71,7 @@ public class VarianteProdutoService {
     @Transactional
     public void inativar(UUID id){
         VarianteProduto varianteExistente = varianteProdutoRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Variante não encontrada"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Variante não encontrada"));
         varianteExistente.setAtivo(false);
         varianteProdutoRepository.save(varianteExistente);
     }
