@@ -1,6 +1,8 @@
 package com.ecommerce.ecommerce_api.service;
 
 import com.ecommerce.ecommerce_api.entity.*;
+import com.ecommerce.ecommerce_api.exception.RecursoNaoEncontradoException;
+import com.ecommerce.ecommerce_api.exception.RegraDeNegocioException;
 import com.ecommerce.ecommerce_api.repository.PagamentoRepository;
 import com.ecommerce.ecommerce_api.repository.PedidoRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +23,13 @@ public class PagamentoService {
     @Transactional
     public Pagamento processarPagamento(UUID pedidoId, MetodoPagamento metodo) {
         Pedido pedido = pedidoRepository.findById(pedidoId)
-                .orElseThrow(()-> new RuntimeException("Pedido não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido não encontrado"));
 
-        if (pedido.getStatus() != StatusPedido.PENDENTE){
-            throw new RuntimeException("Apenas pedidos com status PENDENTE podem ser pagos. Status atual: " + pedido.getStatus());
+        if (pedido.getStatus() != StatusPedido.PENDENTE) {
+            throw new RegraDeNegocioException("Apenas pedidos com status PENDENTE podem ser pagos. Status atual: " + pedido.getStatus());
         }
         if (pagamentoRepository.findByPedidoId(pedidoId).isPresent()) {
-            throw new RuntimeException("Esse pedido ja tem pagamento");
+            throw new RegraDeNegocioException("Esse pedido ja tem pagamento");
         }
 
         Pagamento pagamento = new Pagamento();
@@ -44,6 +46,7 @@ public class PagamentoService {
 
     public Pagamento buscarPorPedido(UUID pedidoId) {
         return pagamentoRepository.findByPedidoId(pedidoId)
-                .orElseThrow(()-> new RuntimeException("Pagamento não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Pagamento não encontrado"));
     }
 }
