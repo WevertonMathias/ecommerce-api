@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "categorias")
+@Table(name = "categories")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,7 +16,7 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "id")
+    @Column(columnDefinition = "uuid")
     private UUID id;
 
     @Column(name = "name", nullable = false, unique = true, length = 100)

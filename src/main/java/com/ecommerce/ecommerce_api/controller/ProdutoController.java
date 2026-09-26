@@ -23,7 +23,7 @@ public class ProdutoController {
     @PostMapping
     public ResponseEntity<ProdutoResponseDTO> criar(@RequestBody ProdutoRequestDTO dto) {
         Produto entidades = produtoMapper.toEntity(dto);
-        Produto produtoSalvo = produtoService.criar(entidades);
+        Produto produtoSalvo = produtoService.criar(entidades, dto.categoriaId());
         ProdutoResponseDTO responseDTO = produtoMapper.toResponseDTO(produtoSalvo);
         return ResponseEntity.status(201).body(responseDTO);
     }

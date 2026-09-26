@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerce_api.entity;
 
-public enum RoleName {
+public enum NomePapel {
     ADMIN ,
     CLIENTE
 }

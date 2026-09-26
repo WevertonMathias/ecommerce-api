@@ -21,11 +21,11 @@ public class VarianteProdutoService {
     private final ProdutoRepository produtoRepository;
 
     @Transactional
-    public VarianteProduto criar(VarianteProduto variante){
+    public VarianteProduto criar(VarianteProduto variante, UUID produtoId){
         if (varianteProdutoRepository.existsBySku(variante.getSku())){
             throw new RegraDeNegocioException("Sku já cadastrado");
         }
-        Produto produtoEncontrado = produtoRepository.findById(variante.getProduto().getId())
+        Produto produtoEncontrado = produtoRepository.findById(produtoId)
                 .orElseThrow(()-> new RecursoNaoEncontradoException("Produto não encontrado"));
 
         variante.setProduto(produtoEncontrado);

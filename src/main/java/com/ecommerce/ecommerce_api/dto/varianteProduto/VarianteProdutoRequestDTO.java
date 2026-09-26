@@ -8,6 +8,6 @@ public record VarianteProdutoRequestDTO(
         String cor,
         String sku,
         BigDecimal preco,
-        UUID produdoId
+        UUID produtoId
 ) {
 }

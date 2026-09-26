@@ -3,7 +3,6 @@ package com.ecommerce.ecommerce_api.service;
 import com.ecommerce.ecommerce_api.entity.Categoria;
 import com.ecommerce.ecommerce_api.entity.Produto;
 import com.ecommerce.ecommerce_api.exception.RecursoNaoEncontradoException;
-import com.ecommerce.ecommerce_api.exception.RegraDeNegocioException;
 import com.ecommerce.ecommerce_api.repository.CategoriaRepository;
 import com.ecommerce.ecommerce_api.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +20,10 @@ public class ProdutoService {
     private final CategoriaRepository categoriaRepository;
 
     @Transactional
-    public Produto criar(Produto produto){
-        Categoria categoriaEncontrada = categoriaRepository.findById(produto.getCategoria().getId())
-                .orElseThrow(()-> new RecursoNaoEncontradoException("Categoria não encontrada!"));
-
+    public Produto criar(Produto produto, UUID categoriaId) {
+        Categoria categoriaEncontrada = categoriaRepository.findById(categoriaId)
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Categoria não encontrada"));
         produto.setCategoria(categoriaEncontrada);
-
         return produtoRepository.save(produto);
     }
 

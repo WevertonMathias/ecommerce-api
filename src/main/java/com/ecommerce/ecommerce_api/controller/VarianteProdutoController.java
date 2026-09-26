@@ -23,7 +23,7 @@ public class VarianteProdutoController {
     @PostMapping
     public ResponseEntity<VarianteProdutoResponseDTO> criar(@RequestBody VarianteProdutoRequestDTO dto){
         VarianteProduto entidades = varianteProdutoMapper.toEntity(dto);
-        VarianteProduto varianteSalvo = varianteProdutoService.criar(entidades);
+        VarianteProduto varianteSalvo = varianteProdutoService.criar(entidades, dto.produtoId());
         VarianteProdutoResponseDTO responseDTO = varianteProdutoMapper.toResponseDTO(varianteSalvo);
         return ResponseEntity.status(201).body(responseDTO);
     }

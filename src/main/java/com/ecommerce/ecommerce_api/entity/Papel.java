@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Role {
+public class Papel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,5 +21,5 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "name")
-    private RoleName name;
+    private NomePapel name;
 }
