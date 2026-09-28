@@ -1,73 +1,80 @@
-# Ecommerce API
+# E-commerce API
 
-API REST de um e-commerce, desenvolvida como projeto de estudo para praticar lógica de programação, regras de negócio e arquitetura de aplicações reais em Java.
+API REST de e-commerce construída do zero em Java + Spring Boot, como projeto de estudo para minha primeira vaga como desenvolvedor backend.
 
-> 🚧 Projeto em desenvolvimento. Este README será atualizado a cada etapa concluída.
+## O que a API faz
 
-## Sobre o projeto
+- Cadastro de usuários com autenticação (JWT em andamento)
+- Categorias e produtos
+- Variantes de produto (tamanho, cor) — preço e estoque controlados por variante, não pelo produto
+- Carrinho de compras (1:1 por usuário)
+- Pedidos, com máquina de estados: `PENDENTE → PAGO → ENVIADO → ENTREGUE` (ou `CANCELADO`, antes de `ENVIADO`)
+- Pagamento simulado, vinculado 1:1 ao pedido
+- Tratamento global de exceções: erros retornam `404` (recurso não encontrado) ou `400` (regra de negócio violada), com corpo de resposta padronizado — nada de stacktrace vazando pro cliente
 
-Aplicação backend que simula as principais funcionalidades de uma loja virtual: catálogo de produtos com variações (tamanho/cor), carrinho de compras persistente, criação e acompanhamento de pedidos, e simulação de pagamento.
+## Stack
 
-## Tecnologias
+- **Java 21** + **Spring Boot 4**
+- **PostgreSQL** com **Flyway** (controle de versão do schema via migrations)
+- **Spring Data JPA**
+- **Spring Security** + **JWT** (em andamento)
+- **MapStruct** (conversão Entity ↔ DTO)
+- **Lombok**
+- **Docker** (banco de dados em container)
+- **springdoc-openapi** (Swagger)
+- JUnit 5 + Mockito + Testcontainers (planejado)
 
-- Java 21
-- Spring Boot 3 (Web, Data JPA, Security, Validation)
-- PostgreSQL
-- Flyway (versionamento de schema)
-- JWT (autenticação)
-- Docker / Docker Compose
-- Springdoc OpenAPI (Swagger)
-- JUnit 5 + Mockito + Testcontainers
-- Lombok + MapStruct
+## Modelo de dados
+
+10 tabelas principais: `users`, `roles`, `user_roles`, `categories`, `products`, `product_variants`, `carts`, `cart_items`, `orders`, `order_items`, `payments`.
+
+Algumas decisões de modelagem:
+- Preço e estoque ficam na **variante**, não no produto — o mesmo produto pode ter variações com preços e disponibilidade diferentes.
+- Endereço de entrega é **embutido** no pedido (`@Embeddable`), não uma tabela separada — cada pedido tem seu próprio endereço, sem necessidade de reaproveitamento.
+- `order_items.unit_price` é um **snapshot**: guarda o preço no momento da compra, imutável mesmo que o preço da variante mude depois.
+- Carrinho é **1:1** com o usuário, criado automaticamente (find-or-create) na primeira vez que é acessado.
 
 ## Arquitetura
 
-Estrutura em camadas: `controller` → `service` → `repository`, com DTOs para entrada/saída (nunca expondo entidades JPA diretamente) e tratamento global de exceções.
+Camadas separadas por responsabilidade:
 
-Modelo de dados completo em [`docs/`](./docs).
+\```
+Entity → Repository → Service → DTO/Mapper → Controller
+\```
 
-## Como rodar o projeto localmente
+- **Entity**: espelha o banco de dados
+- **Repository**: acesso a dados (Spring Data JPA + Query Methods)
+- **Service**: regras de negócio, validações, máquina de estados
+- **DTO/Mapper**: contrato de entrada/saída da API (MapStruct), nunca expondo a entidade diretamente
+- **Controller**: camada HTTP, sem lógica de negócio
 
-> ⚠️ Seção será detalhada assim que o Docker Compose e o `pom.xml` estiverem prontos.
+## Status atual
 
-```bash
-# Clonar o repositório
-git clone https://github.com/SEU_USUARIO/ecommerce-api.git
-cd ecommerce-api
+- [x] Entidades e relacionamentos
+- [x] Repositories
+- [x] Services (regras de negócio completas)
+- [x] DTOs e Mappers
+- [x] Controllers (CRUD completo de todos os recursos)
+- [x] Tratamento global de exceções
+- [ ] Autenticação JWT (login funcionando; filtro de validação em andamento)
+- [ ] Testes automatizados (JUnit + Mockito + Testcontainers)
+- [ ] Documentação Swagger
+- [ ] Dockerfile + deploy
 
-# Subir o banco de dados via Docker
+## Como rodar localmente
+
+Pré-requisitos: Java 21, Docker, Maven (ou usar o `./mvnw` incluso no projeto).
+
+\```bash
+# Sobe o banco de dados PostgreSQL
 docker-compose up -d
 
-# Rodar a aplicação
+# Roda a aplicação (Flyway aplica as migrations automaticamente)
 ./mvnw spring-boot:run
-```
+\```
 
-## Documentação da API
+A API sobe em `http://localhost:8080`. Health-check disponível em `/actuator/health`.
 
-Após subir a aplicação, o Swagger estará disponível em:
-`http://localhost:8080/swagger-ui.html`
+## Sobre o projeto
 
-## Testes
-
-```bash
-./mvnw test
-```
-
-## Status do desenvolvimento
-
-- [x] Modelagem do banco de dados
-- [ ] Setup do projeto Spring Boot + Docker Compose
-- [ ] Migrations Flyway
-- [ ] Entidades JPA
-- [ ] Autenticação JWT
-- [ ] CRUD de produtos e categorias
-- [ ] Carrinho de compras
-- [ ] Pedidos e regras de negócio
-- [ ] Pagamento (simulado)
-- [ ] Testes unitários e de integração
-- [ ] Documentação Swagger completa
-- [ ] Deploy
-
-## Autor
-
-Desenvolvido por [seu nome] como projeto de estudo backend Java.
+Esse é um projeto pessoal de estudo, construído com o objetivo de aprender Spring Boot na prática e treinar decisões reais de arquitetura e modelagem de dados — não apenas seguir tutoriais, mas entender o porquê de cada escolha.
