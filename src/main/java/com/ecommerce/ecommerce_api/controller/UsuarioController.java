@@ -23,7 +23,7 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> criar(@RequestBody UsuarioRequestDTO dto){
         Usuario entidade = usuarioMapper.toEntity(dto);
-        Usuario usuarioSalvo = usuarioService.cadastrar(entidade);
+        Usuario usuarioSalvo = usuarioService.cadastrar(entidade, dto.senha());
         UsuarioResponseDTO responseDTO = usuarioMapper.toResponseDTO(usuarioSalvo);
         return ResponseEntity.status(201).body(responseDTO);
     }

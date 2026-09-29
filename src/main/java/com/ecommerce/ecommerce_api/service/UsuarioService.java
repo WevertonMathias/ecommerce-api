@@ -24,12 +24,12 @@ public class UsuarioService {
     private final PapelRepository papelRepository;
 
     @Transactional
-    public Usuario cadastrar(Usuario usuario){
+    public Usuario cadastrar(Usuario usuario, String senhaCrua){
         if (usuarioRepository.existsByEmail(usuario.getEmail())){
             throw new RegraDeNegocioException("Email já cadastrado!");
         }
 
-        usuario.setSenhaHash(passwordEncoder.encode(usuario.getSenhaHash()));
+        usuario.setSenhaHash(passwordEncoder.encode(senhaCrua));
         Papel papelCliente = papelRepository.findByName(NomePapel.CLIENTE)
                 .orElseThrow(()-> new RecursoNaoEncontradoException("Papel CLIENTE não encontrado!"));
         usuario.adicionarPapel(papelCliente);
