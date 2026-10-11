@@ -6,6 +6,7 @@ import com.ecommerce.ecommerce_api.entity.Carrinho;
 import com.ecommerce.ecommerce_api.service.CarrinhoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ public class CarrinhoController {
 
     private final CarrinhoService carrinhoService;
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @GetMapping("/{usuarioId}")
     public ResponseEntity<CarrinhoResponseDTO> buscarPorUsuario(@PathVariable UUID usuarioId){
         Carrinho carrinho = carrinhoService.buscarPorUsuario(usuarioId);
@@ -24,6 +26,7 @@ public class CarrinhoController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @PostMapping("/{usuarioId}/itens")
     public ResponseEntity<CarrinhoResponseDTO> adicionarItem(@PathVariable UUID usuarioId, @RequestBody AdicionarItemRequestDTO dto){
         Carrinho carrinho = carrinhoService.adicionarItem(usuarioId, dto.varianteProdutoId(), dto.quantidade());
@@ -31,6 +34,7 @@ public class CarrinhoController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @DeleteMapping("/{usuarioId}/itens/{itemId}")
     public ResponseEntity<Void> removerItem(@PathVariable UUID usuarioId, @PathVariable UUID itemId) {
         carrinhoService.removerItem(usuarioId, itemId);

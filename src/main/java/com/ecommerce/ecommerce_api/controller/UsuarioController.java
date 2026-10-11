@@ -7,6 +7,7 @@ import com.ecommerce.ecommerce_api.mapper.UsuarioMapper;
 import com.ecommerce.ecommerce_api.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class UsuarioController {
         return ResponseEntity.status(201).body(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable UUID id) {
         Usuario entidade = usuarioService.buscarPorId(id);
@@ -35,6 +37,7 @@ public class UsuarioController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> listarAtivos() {
         List<Usuario> entidades = usuarioService.listarAtivos();
@@ -43,6 +46,7 @@ public class UsuarioController {
         return ResponseEntity.ok(listaDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable UUID id, @RequestBody UsuarioRequestDTO dto) {
         Usuario entidades = usuarioMapper.toEntity(dto);
@@ -51,6 +55,7 @@ public class UsuarioController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         usuarioService.inativar(id);

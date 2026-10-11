@@ -7,6 +7,7 @@ import com.ecommerce.ecommerce_api.mapper.ProdutoMapper;
 import com.ecommerce.ecommerce_api.service.ProdutoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ProdutoController {
     private final ProdutoService produtoService;
     private final ProdutoMapper produtoMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProdutoResponseDTO> criar(@RequestBody ProdutoRequestDTO dto) {
         Produto entidades = produtoMapper.toEntity(dto);
@@ -43,6 +45,7 @@ public class ProdutoController {
         return ResponseEntity.ok(listaDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProdutoResponseDTO> atualizar(@PathVariable UUID id, @RequestBody ProdutoRequestDTO dto) {
         Produto entidades = produtoMapper.toEntity(dto);
@@ -51,6 +54,7 @@ public class ProdutoController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         produtoService.inativar(id);

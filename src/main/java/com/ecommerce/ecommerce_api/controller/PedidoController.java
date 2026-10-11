@@ -8,6 +8,7 @@ import com.ecommerce.ecommerce_api.mapper.PedidoMapper;
 import com.ecommerce.ecommerce_api.service.PedidoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class PedidoController {
     private final PedidoService pedidoService;
     private final PedidoMapper pedidoMapper;
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @PostMapping("/{usuarioId}")
     public ResponseEntity<PedidoResponseDTO> criar(@PathVariable UUID usuarioId, @RequestBody CriarPedidoRequestDTO dto) {
         Pedido pedido = pedidoService.criarAPartirDoCarrinho(usuarioId, dto.endereco());
@@ -28,6 +30,7 @@ public class PedidoController {
         return ResponseEntity.status(201).body(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDonoDoPedido(#id, authentication)")
     @GetMapping("/{id}")
     public ResponseEntity<PedidoResponseDTO> buscarPorId(@PathVariable UUID id) {
         Pedido pedido = pedidoService.buscarPorId(id);
@@ -35,6 +38,7 @@ public class PedidoController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<PedidoResponseDTO>> listarPorUsuario(@PathVariable UUID usuarioId) {
         List<Pedido> entidades = pedidoService.listarPorUsuario(usuarioId);
@@ -43,6 +47,7 @@ public class PedidoController {
         return ResponseEntity.ok(listaDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<PedidoResponseDTO> atualizarStatus(@PathVariable UUID id, @RequestParam StatusPedido novoStatus) {
         Pedido entidades = pedidoService.atualizarStatus(id, novoStatus);

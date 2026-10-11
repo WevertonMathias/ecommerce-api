@@ -7,6 +7,7 @@ import com.ecommerce.ecommerce_api.mapper.PagamentoMapper;
 import com.ecommerce.ecommerce_api.service.PagamentoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class PagamentoController {
     private final PagamentoService pagamentoService;
     private final PagamentoMapper pagamentoMapper;
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDonoDoPedido(#id, authentication)")
     @PostMapping
     public ResponseEntity<PagamentoResponseDTO> processarPagamento(@RequestBody PagamentoRequestDTO dto) {
         Pagamento pagamento = pagamentoService.processarPagamento(dto.pedidoId(), dto.metodo());
@@ -26,6 +28,7 @@ public class PagamentoController {
         return ResponseEntity.status(201).body(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDonoDoPedido(#id, authentication)")
     @GetMapping("/pedido/{pedidoId}")
     public ResponseEntity<PagamentoResponseDTO> buscarPorPedido(@PathVariable UUID pedidoId) {
         Pagamento entidades = pagamentoService.buscarPorPedido(pedidoId);

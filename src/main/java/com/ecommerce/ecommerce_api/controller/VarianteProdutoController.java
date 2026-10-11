@@ -7,6 +7,7 @@ import com.ecommerce.ecommerce_api.mapper.VarianteProdutoMapper;
 import com.ecommerce.ecommerce_api.service.VarianteProdutoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class VarianteProdutoController {
     private final VarianteProdutoService varianteProdutoService;
     private final VarianteProdutoMapper varianteProdutoMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<VarianteProdutoResponseDTO> criar(@RequestBody VarianteProdutoRequestDTO dto){
         VarianteProduto entidades = varianteProdutoMapper.toEntity(dto);
@@ -43,6 +45,7 @@ public class VarianteProdutoController {
         return ResponseEntity.ok(listaDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<VarianteProdutoResponseDTO> atualizar(@PathVariable UUID id, @RequestBody VarianteProdutoRequestDTO dto){
         VarianteProduto entidades = varianteProdutoMapper.toEntity(dto);
@@ -51,6 +54,7 @@ public class VarianteProdutoController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/estoque")
     public ResponseEntity<VarianteProdutoResponseDTO> diminuirEstoque(
             @PathVariable UUID id,
@@ -60,6 +64,7 @@ public class VarianteProdutoController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id){
         varianteProdutoService.inativar(id);
