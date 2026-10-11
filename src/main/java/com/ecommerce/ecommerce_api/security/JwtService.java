@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerce_api.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,11 +36,25 @@ public class JwtService {
 
     public String extrairEmail(String token) {
         return Jwts.parser()
-              .verifyWith(getSecretKey())
-              .build()
-              .parseSignedClaims(token)
-              .getPayload()
-              .getSubject();
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+
+    public List<String> extrairRoles(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        List<?> roles = claims.get("roles", List.class);
+        if (roles == null) {
+            return List.of();
+        }
+        return roles.stream().map(String::valueOf).toList();
     }
 
     public boolean tokenValido(String token) {

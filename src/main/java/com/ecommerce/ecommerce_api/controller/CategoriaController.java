@@ -7,6 +7,7 @@ import com.ecommerce.ecommerce_api.mapper.CategoriaMapper;
 import com.ecommerce.ecommerce_api.service.CategoriaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class CategoriaController {
     private final CategoriaService categoriaService;
     private final CategoriaMapper categoriaMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CategoriaResponseDTO> criar(@RequestBody CategoriaRequestDTO dto){
         Categoria entidade = categoriaMapper.toEntity(dto);
@@ -43,6 +45,7 @@ public class CategoriaController {
         return ResponseEntity.ok(listaDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CategoriaResponseDTO> atualizar(@PathVariable UUID id, @RequestBody CategoriaRequestDTO dto) {
         Categoria entidades = categoriaMapper.toEntity(dto);
@@ -51,6 +54,7 @@ public class CategoriaController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         categoriaService.deletar(id);
