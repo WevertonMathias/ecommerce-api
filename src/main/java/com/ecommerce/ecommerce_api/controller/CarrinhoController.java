@@ -4,6 +4,7 @@ import com.ecommerce.ecommerce_api.dto.adicionarItem.AdicionarItemRequestDTO;
 import com.ecommerce.ecommerce_api.dto.carrinho.CarrinhoResponseDTO;
 import com.ecommerce.ecommerce_api.entity.Carrinho;
 import com.ecommerce.ecommerce_api.service.CarrinhoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +29,7 @@ public class CarrinhoController {
 
     @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @PostMapping("/{usuarioId}/itens")
-    public ResponseEntity<CarrinhoResponseDTO> adicionarItem(@PathVariable UUID usuarioId, @RequestBody AdicionarItemRequestDTO dto){
+    public ResponseEntity<CarrinhoResponseDTO> adicionarItem(@Valid @PathVariable UUID usuarioId, @RequestBody AdicionarItemRequestDTO dto){
         Carrinho carrinho = carrinhoService.adicionarItem(usuarioId, dto.varianteProdutoId(), dto.quantidade());
         CarrinhoResponseDTO responseDTO = carrinhoService.toResponseDTO(carrinho);
         return ResponseEntity.ok(responseDTO);

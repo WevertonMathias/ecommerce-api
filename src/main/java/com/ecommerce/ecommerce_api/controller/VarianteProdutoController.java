@@ -5,6 +5,7 @@ import com.ecommerce.ecommerce_api.dto.varianteProduto.VarianteProdutoResponseDT
 import com.ecommerce.ecommerce_api.entity.VarianteProduto;
 import com.ecommerce.ecommerce_api.mapper.VarianteProdutoMapper;
 import com.ecommerce.ecommerce_api.service.VarianteProdutoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ public class VarianteProdutoController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<VarianteProdutoResponseDTO> criar(@RequestBody VarianteProdutoRequestDTO dto){
+    public ResponseEntity<VarianteProdutoResponseDTO> criar(@Valid @RequestBody VarianteProdutoRequestDTO dto){
         VarianteProduto entidades = varianteProdutoMapper.toEntity(dto);
         VarianteProduto varianteSalvo = varianteProdutoService.criar(entidades, dto.produtoId());
         VarianteProdutoResponseDTO responseDTO = varianteProdutoMapper.toResponseDTO(varianteSalvo);
@@ -47,7 +48,7 @@ public class VarianteProdutoController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<VarianteProdutoResponseDTO> atualizar(@PathVariable UUID id, @RequestBody VarianteProdutoRequestDTO dto){
+    public ResponseEntity<VarianteProdutoResponseDTO> atualizar(@Valid @PathVariable UUID id, @RequestBody VarianteProdutoRequestDTO dto){
         VarianteProduto entidades = varianteProdutoMapper.toEntity(dto);
         VarianteProduto varianteAtualizada = varianteProdutoService.atualizar(id, entidades);
         VarianteProdutoResponseDTO responseDTO = varianteProdutoMapper.toResponseDTO(varianteAtualizada);

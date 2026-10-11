@@ -5,6 +5,7 @@ import com.ecommerce.ecommerce_api.dto.pagamento.PagamentoResponseDTO;
 import com.ecommerce.ecommerce_api.entity.Pagamento;
 import com.ecommerce.ecommerce_api.mapper.PagamentoMapper;
 import com.ecommerce.ecommerce_api.service.PagamentoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +23,7 @@ public class PagamentoController {
 
     @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDonoDoPedido(#id, authentication)")
     @PostMapping
-    public ResponseEntity<PagamentoResponseDTO> processarPagamento(@RequestBody PagamentoRequestDTO dto) {
+    public ResponseEntity<PagamentoResponseDTO> processarPagamento(@Valid @RequestBody PagamentoRequestDTO dto) {
         Pagamento pagamento = pagamentoService.processarPagamento(dto.pedidoId(), dto.metodo());
         PagamentoResponseDTO responseDTO = pagamentoMapper.toResponseDTO(pagamento);
         return ResponseEntity.status(201).body(responseDTO);

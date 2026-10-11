@@ -5,6 +5,7 @@ import com.ecommerce.ecommerce_api.dto.produto.ProdutoResponseDTO;
 import com.ecommerce.ecommerce_api.entity.Produto;
 import com.ecommerce.ecommerce_api.mapper.ProdutoMapper;
 import com.ecommerce.ecommerce_api.service.ProdutoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ public class ProdutoController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ProdutoResponseDTO> criar(@RequestBody ProdutoRequestDTO dto) {
+    public ResponseEntity<ProdutoResponseDTO> criar(@Valid @RequestBody ProdutoRequestDTO dto) {
         Produto entidades = produtoMapper.toEntity(dto);
         Produto produtoSalvo = produtoService.criar(entidades, dto.categoriaId());
         ProdutoResponseDTO responseDTO = produtoMapper.toResponseDTO(produtoSalvo);
@@ -47,7 +48,7 @@ public class ProdutoController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<ProdutoResponseDTO> atualizar(@PathVariable UUID id, @RequestBody ProdutoRequestDTO dto) {
+    public ResponseEntity<ProdutoResponseDTO> atualizar(@Valid @PathVariable UUID id, @RequestBody ProdutoRequestDTO dto) {
         Produto entidades = produtoMapper.toEntity(dto);
         Produto produtoAtualizado = produtoService.atualizarProduto(id, entidades);
         ProdutoResponseDTO responseDTO = produtoMapper.toResponseDTO(produtoAtualizado);

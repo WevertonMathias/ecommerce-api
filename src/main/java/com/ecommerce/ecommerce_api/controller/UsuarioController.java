@@ -5,6 +5,7 @@ import com.ecommerce.ecommerce_api.dto.usuario.UsuarioResponseDTO;
 import com.ecommerce.ecommerce_api.entity.Usuario;
 import com.ecommerce.ecommerce_api.mapper.UsuarioMapper;
 import com.ecommerce.ecommerce_api.service.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +23,7 @@ public class UsuarioController {
     private final UsuarioMapper usuarioMapper;
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDTO> criar(@RequestBody UsuarioRequestDTO dto){
+    public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioRequestDTO dto){
         Usuario entidade = usuarioMapper.toEntity(dto);
         Usuario usuarioSalvo = usuarioService.cadastrar(entidade, dto.senha());
         UsuarioResponseDTO responseDTO = usuarioMapper.toResponseDTO(usuarioSalvo);
@@ -48,7 +49,7 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable UUID id, @RequestBody UsuarioRequestDTO dto) {
+    public ResponseEntity<UsuarioResponseDTO> atualizar(@Valid @PathVariable UUID id, @RequestBody UsuarioRequestDTO dto) {
         Usuario entidades = usuarioMapper.toEntity(dto);
         Usuario usuarioAtualizado = usuarioService.atualizar(id, entidades);
         UsuarioResponseDTO responseDTO = usuarioMapper.toResponseDTO(usuarioAtualizado);

@@ -5,6 +5,7 @@ import com.ecommerce.ecommerce_api.dto.categoria.CategoriaResponseDTO;
 import com.ecommerce.ecommerce_api.entity.Categoria;
 import com.ecommerce.ecommerce_api.mapper.CategoriaMapper;
 import com.ecommerce.ecommerce_api.service.CategoriaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ public class CategoriaController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<CategoriaResponseDTO> criar(@RequestBody CategoriaRequestDTO dto){
+    public ResponseEntity<CategoriaResponseDTO> criar(@Valid @RequestBody CategoriaRequestDTO dto){
         Categoria entidade = categoriaMapper.toEntity(dto);
         Categoria categoriaSalva = categoriaService.criar(entidade);
         CategoriaResponseDTO responseDTO = categoriaMapper.toResponseDTO(categoriaSalva);
@@ -47,7 +48,7 @@ public class CategoriaController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaResponseDTO> atualizar(@PathVariable UUID id, @RequestBody CategoriaRequestDTO dto) {
+    public ResponseEntity<CategoriaResponseDTO> atualizar(@Valid @PathVariable UUID id, @RequestBody CategoriaRequestDTO dto) {
         Categoria entidades = categoriaMapper.toEntity(dto);
         Categoria categoriaAtualizada = categoriaService.atualizar(id, entidades);
         CategoriaResponseDTO responseDTO = categoriaMapper.toResponseDTO(categoriaAtualizada);

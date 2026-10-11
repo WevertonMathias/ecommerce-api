@@ -6,6 +6,7 @@ import com.ecommerce.ecommerce_api.entity.Usuario;
 import com.ecommerce.ecommerce_api.exception.RegraDeNegocioException;
 import com.ecommerce.ecommerce_api.repository.UsuarioRepository;
 import com.ecommerce.ecommerce_api.security.JwtService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +27,7 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         Usuario usuario = usuarioRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new RegraDeNegocioException("Email ou senha inválidos"));
         if (!passwordEncoder.matches(dto.senha(), usuario.getSenhaHash())){

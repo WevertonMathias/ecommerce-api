@@ -6,6 +6,7 @@ import com.ecommerce.ecommerce_api.entity.Pedido;
 import com.ecommerce.ecommerce_api.entity.StatusPedido;
 import com.ecommerce.ecommerce_api.mapper.PedidoMapper;
 import com.ecommerce.ecommerce_api.service.PedidoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,7 +25,7 @@ public class PedidoController {
 
     @PreAuthorize("hasRole('ADMIN') or @autorizacao.ehDono(#usuarioId, authentication)")
     @PostMapping("/{usuarioId}")
-    public ResponseEntity<PedidoResponseDTO> criar(@PathVariable UUID usuarioId, @RequestBody CriarPedidoRequestDTO dto) {
+    public ResponseEntity<PedidoResponseDTO> criar(@Valid @PathVariable UUID usuarioId, @RequestBody CriarPedidoRequestDTO dto) {
         Pedido pedido = pedidoService.criarAPartirDoCarrinho(usuarioId, dto.endereco());
         PedidoResponseDTO responseDTO = pedidoMapper.toResponseDTO(pedido);
         return ResponseEntity.status(201).body(responseDTO);
