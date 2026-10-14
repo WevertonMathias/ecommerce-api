@@ -55,11 +55,23 @@ public class VarianteProdutoService {
     }
 
     @Transactional
+    public void inativar(UUID id){
+        VarianteProduto varianteExistente = varianteProdutoRepository.findById(id)
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Variante não encontrada"));
+        varianteExistente.setAtivo(false);
+        varianteProdutoRepository.save(varianteExistente);
+    }
+
+    @Transactional
     public VarianteProduto diminuirEstoque(UUID id, int quantidade) {
+        if (quantidade <= 0) {
+            throw new RegraDeNegocioException("A quantidade deve ser maior que zero");
+        }
+
         VarianteProduto variante = varianteProdutoRepository.findById(id)
                 .orElseThrow(()-> new RecursoNaoEncontradoException("Variante não encontrada"));
 
-        if (variante.getQuantidadeEstoque()< quantidade){
+        if (variante.getQuantidadeEstoque() < quantidade){
             throw new RegraDeNegocioException("Estoque insuficiente");
         }
 
@@ -69,10 +81,16 @@ public class VarianteProdutoService {
     }
 
     @Transactional
-    public void inativar(UUID id){
-        VarianteProduto varianteExistente = varianteProdutoRepository.findById(id)
+    public VarianteProduto aumentarEstoque(UUID id, int quantidade) {
+        if (quantidade <= 0) {
+            throw new RegraDeNegocioException("A quantidade deve ser maior que zero");
+        }
+
+        VarianteProduto variante = varianteProdutoRepository.findById(id)
                 .orElseThrow(()-> new RecursoNaoEncontradoException("Variante não encontrada"));
-        varianteExistente.setAtivo(false);
-        varianteProdutoRepository.save(varianteExistente);
+
+        variante.setQuantidadeEstoque(variante.getQuantidadeEstoque() + quantidade);
+
+        return varianteProdutoRepository.save(variante);
     }
 }

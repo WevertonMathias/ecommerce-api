@@ -21,6 +21,9 @@ public record VarianteProdutoRequestDTO(
         BigDecimal preco,
 
         @NotNull
-        UUID produtoId
+        UUID produtoId,
+
+        @PositiveOrZero(message = "O estoque não pode ser negativo")
+        int quantidadeEstoque
 ) {
 }

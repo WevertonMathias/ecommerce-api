@@ -56,6 +56,16 @@ public class VarianteProdutoController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/estoque/adicionar")
+    public ResponseEntity<VarianteProdutoResponseDTO> adicionarEstoque(
+            @PathVariable UUID id,
+            @RequestParam int quantidade) {
+        VarianteProduto variante = varianteProdutoService.aumentarEstoque(id, quantidade);
+        VarianteProdutoResponseDTO responseDTO = varianteProdutoMapper.toResponseDTO(variante);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/estoque")
     public ResponseEntity<VarianteProdutoResponseDTO> diminuirEstoque(
             @PathVariable UUID id,
