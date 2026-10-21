@@ -51,19 +51,19 @@ Respostas de erro seguem o mesmo formato:
 - **Bean Validation** (validação de entrada nos DTOs)
 - **MapStruct** (Entity ↔ DTO) e **Lombok**
 - **springdoc-openapi** (Swagger UI)
-- **JUnit 5**, **Mockito** e **Testcontainers**
+- **JUnit**, **Mockito** e **Testcontainers**
 - **Docker** (build em duas etapas) e Docker Compose
 
 ## Modelo de dados
 
-10 tabelas: `users`, `roles`, `user_roles`, `categories`, `products`, `product_variants`, `carts`, `cart_items`, `orders`, `order_items`, `payments`.
+11 tabelas: `users`, `roles`, `user_roles`, `categories`, `products`, `product_variants`, `carts`, `cart_items`, `orders`, `order_items`, `payments`.
 
 Decisões de modelagem:
 - Preço e estoque ficam na **variante**, não no produto: o mesmo produto pode ter versões com preço e disponibilidade diferentes.
 - O endereço de entrega é **embutido** no pedido (`@Embeddable`), sem tabela própria.
 - `order_items.unit_price` é um **snapshot**: guarda o preço no momento da compra e não muda se o preço da variante mudar depois.
 - O carrinho é **1:1** com o usuário e é criado automaticamente no primeiro acesso.
-- Exclusão é lógica (campo `ativo`): nada é apagado de verdade.
+- - Exclusão é lógica (campo ativo) em usuários, produtos e variantes, para preservar o histórico dos pedidos. A categoria é removida de fato.
 
 ## Arquitetura
 
@@ -79,7 +79,7 @@ Entity → Repository → Service → DTO/Mapper → Controller
 
 ## Testes
 
-- **Unitários**: todos os Services, com JUnit 5 e Mockito (repositórios mockados).
+- **Unitários**: todos os Services, com JUnit e Mockito (repositórios mockados).
 - **Integração**: `UsuarioRepository` contra um PostgreSQL real e descartável, via Testcontainers.
 
 ```bash
@@ -149,8 +149,8 @@ Depois, faça login de novo: os papéis ficam dentro do token.
 - [x] Testes unitários dos Services
 - [x] Teste de integração com Testcontainers (UsuarioRepository)
 - [x] Dockerfile e Docker Compose
-- [ ] Testes de integração dos demais repositories
-- [ ] Deploy (Render)
+- [x] Testes de integração dos demais repositories
+- [x] Deploy (Render)
 
 ## Sobre o projeto
 
