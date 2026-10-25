@@ -2,7 +2,21 @@
 
 API REST de e-commerce construída do zero em Java + Spring Boot, como projeto de estudo para minha primeira vaga como desenvolvedor backend.
 
-Documentação interativa (Swagger): `http://localhost:8080/swagger-ui.html`
+## Demonstração online
+
+- **Swagger (API no ar):** h- **Swagger (API no ar):** https://ecommerce-api-7331.onrender.com/swagger-ui.html
+- A API está no plano gratuito da Render. Se estiver parada, o primeiro acesso pode levar cerca de 1 minuto para responder.
+
+Para testar:
+
+1. No Swagger, use `POST /usuarios` para criar um usuário (endpoint público) e anote o `id` retornado.
+2. Faça login em `POST /auth/login` e copie o token da resposta, sem as aspas.
+3. Clique em **Authorize**, cole o token e confirme.
+4. Consulte o catálogo em `GET /produtos` e experimente o fluxo: adicionar ao carrinho, criar o pedido e pagar.
+
+Os endpoints de administração (criar categorias, produtos e variantes) devolvem `403` para um usuário comum. Esse é o comportamento esperado.
+
+Localmente, o Swagger fica em `http://localhost:8080/swagger-ui.html`.
 
 ## O que a API faz
 
@@ -63,7 +77,7 @@ Decisões de modelagem:
 - O endereço de entrega é **embutido** no pedido (`@Embeddable`), sem tabela própria.
 - `order_items.unit_price` é um **snapshot**: guarda o preço no momento da compra e não muda se o preço da variante mudar depois.
 - O carrinho é **1:1** com o usuário e é criado automaticamente no primeiro acesso.
-- - Exclusão é lógica (campo ativo) em usuários, produtos e variantes, para preservar o histórico dos pedidos. A categoria é removida de fato.
+- Exclusão é lógica (campo `ativo`) em usuários, produtos e variantes, para preservar o histórico dos pedidos. A categoria é removida de fato.
 
 ## Arquitetura
 
@@ -150,7 +164,7 @@ Depois, faça login de novo: os papéis ficam dentro do token.
 - [x] Teste de integração com Testcontainers (UsuarioRepository)
 - [x] Dockerfile e Docker Compose
 - [x] Testes de integração dos demais repositories
-- [x] Deploy (Render)
+- [x] Deploy na Render
 
 ## Sobre o projeto
 
